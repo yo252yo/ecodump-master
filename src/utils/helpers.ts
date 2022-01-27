@@ -50,6 +50,20 @@ export const sortByTextExcludingWord =
     return aContainsWord ? 1 : -1;
   };
 
+export const sortByCustomOrdering =
+  (a: ProductOffer, b: ProductOffer, ordering: string) => {
+    switch(ordering){
+      case Orderings.STORE:
+        return a.StoreName.toLowerCase().localeCompare(b.StoreName.toLowerCase());
+      case Orderings.QUANTITY:
+        return a.Quantity - b.Quantity;
+      case Orderings.PRICE:
+        return a.Price - b.Price;
+      default:
+        return a.ItemName.toLowerCase().localeCompare(b.ItemName.toLowerCase());
+    }
+  };
+
 export const calcAvgPrice = (items: { price: number; quantity: number }[]) => {
   const avgCalc = items.reduce(
     (agg, next) => ({

@@ -27,6 +27,8 @@ export default () => {
     setProductsPage,
     setFilterByOwner,
     setShowStoreModal,
+    setPageSize,
+    setOrdering,
     clearFilters
   } = createMarketStore();
 
@@ -68,6 +70,18 @@ export default () => {
             />
           </Show>
           <Button onClick={() => clearFilters()}>Clear filters</Button>
+          <Dropdown
+            value={state.pageSize}
+            values={[
+              { value: 50, text: "50 rows" },
+              { value: 100, text: "100 rows" },
+              { value: 200, text: "200 rows" },
+              { value: 1000, text: "1000 rows" },
+            ]}
+            onChange={(value) => setPageSize((value))}
+            origin="SE"
+            direction="SW"
+          />
         </div>
       </div>
       <Show when={state.isStoresTable}>
@@ -89,6 +103,7 @@ export default () => {
           setSearch={setSearch}
           setCurrencyFilter={setCurrencyFilter}
           setShowStoreModal={setShowStoreModal}
+          setOrdering={setOrdering}
         />
         <Pagination
           currentPage={state.productsPage}

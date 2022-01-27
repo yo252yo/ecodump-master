@@ -7,21 +7,35 @@ import { Accessor, For } from "solid-js";
 import Tooltip from "../../components/Tooltip";
 import Button from "../../components/Button";
 import Highlight from "../../components/Highlight";
+import { Orderings } from "../../utils/constants";
 
 type Props = {
   products: Accessor<ProductOffer[] | undefined>;
   setSearch: (search: string) => void;
   setCurrencyFilter: (currency: string) => void;
   setShowStoreModal: (storeName: string) => void;
+  setOrdering: (ordering: Orderings) => void;
 };
 export default (props: Props) => (
   <Table>
     <TableHeader>
-      <TableHeaderCol>Product Name</TableHeaderCol>
-      <TableHeaderCol>Store Name</TableHeaderCol>
+      <TableHeaderCol>
+        <a onClick={() => props.setOrdering(Orderings.PRODUCT)}>
+        Product Name</a>
+      </TableHeaderCol>
+      <TableHeaderCol>
+        <a onClick={() => props.setOrdering(Orderings.STORE)}>
+        Store Name</a>
+      </TableHeaderCol>
       <TableHeaderCol>Store Owner</TableHeaderCol>
-      <TableHeaderCol>Quantity</TableHeaderCol>
-      <TableHeaderCol>Price</TableHeaderCol>
+      <TableHeaderCol>
+        <a onClick={() => props.setOrdering(Orderings.QUANTITY)}>
+        Quantity</a>
+      </TableHeaderCol>
+      <TableHeaderCol>
+        <a onClick={() => props.setOrdering(Orderings.PRICE)}>
+        Price</a>
+      </TableHeaderCol>
     </TableHeader>
     <TableBody>
       <For each={props.products()}>

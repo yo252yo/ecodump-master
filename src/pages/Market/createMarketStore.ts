@@ -1,11 +1,10 @@
 import { createEffect, createMemo } from "solid-js";
-import { OrderTypes } from "../../utils/constants";
+import { OrderTypes, Orderings } from "../../utils/constants";
 import createDebounce from "../../hooks/createDebounce";
 import { useMainContext } from "../../hooks/MainContext";
 import { createLocalStore } from "../../utils/createLocalStore";
-import { filterByText } from "../../utils/helpers";
+import { filterByText, sortByCustomOrdering } from "../../utils/helpers";
 
-const pageSize = 100;
 type Store = {
   search: string;
   isStoresTable: boolean;
@@ -14,6 +13,8 @@ type Store = {
   productsPage: number;
   filterByOwner: boolean;
   showStoreModal: string | undefined;
+  orderingType: Orderings | undefined;
+  pageSize: number,
 };
 export default () => {
   const {
@@ -31,6 +32,8 @@ export default () => {
       productsPage: 1,
       filterByOwner: false,
       showStoreModal: undefined,
+      orderingType: undefined,
+      pageSize: 100,
     },
     "MarketStore"
   );
@@ -51,12 +54,12 @@ export default () => {
           a.Name.toLowerCase().localeCompare(b.Name.toLowerCase())
         )
         .slice(
-          (state.storesPage - 1) * pageSize,
-          state.storesPage * pageSize
+          (state.storesPage - 1) * state.pageSize,
+          state.storesPage * state.pageSize
         ) as Stores[]
   );
   const storesTotalPages = createMemo(() =>
-    Math.ceil((storesResource()?.Stores?.length ?? 0) / pageSize)
+    Math.ceil((storesResource()?.Stores?.length ?? 0) / state.pageSize)
   );
 
   const filteredProducts = createMemo(() =>
@@ -69,18 +72,20 @@ export default () => {
         (!state.filterByOwner ||
           mainState.userName.length === 0 ||
           filterByText(mainState.userName, product.StoreOwner ?? "")) &&
-        (state.filterOrderType === OrderTypes.BOTH || 
+        (state.filterOrderType === OrderTypes.BOTH ||
           state.filterOrderType === OrderTypes.BUY && product.Buying || state.filterOrderType === OrderTypes.SELL && !product.Buying)
     )
   );
   const productsTotalPages = createMemo(() =>
-    Math.ceil((filteredProducts()?.length ?? 0) / pageSize)
+    Math.ceil((filteredProducts()?.length ?? 0) / state.pageSize)
   );
   const products = createMemo(() =>
-    filteredProducts().slice(
-      (state.productsPage - 1) * pageSize,
-      state.productsPage * pageSize
-    )
+    filteredProducts()
+      .sort((a, b) => sortByCustomOrdering(a, b, state.orderingType))
+      .slice(
+        (state.productsPage - 1) * state.pageSize,
+        state.productsPage * state.pageSize
+      )
   );
   const [setSearch] = createDebounce(
     (newValue: string) =>
@@ -103,9 +108,13 @@ export default () => {
     setOrderType: (newType: OrderTypes) => setState({ filterOrderType: newType}),
     setStoresPage: (pageNum: number) => setState({ storesPage: pageNum }),
     setProductsPage: (pageNum: number) => setState({ productsPage: pageNum }),
+    setPageSize: (newPageSize: number) => setState({ pageSize: newPageSize }),
     setFilterByOwner: (filterByOwner: boolean) =>
       setState({ filterByOwner: filterByOwner }),
-    setShowStoreModal: (storeName: string | undefined) => setState({showStoreModal: storeName}),
+    setShowStoreModal: (storeName: string | undefined) =>
+      setState({showStoreModal: storeName}),
+    setOrdering: (newOrderingType: Orderings | undefined) =>
+      setState({orderingType: newOrderingType}),
     products,
     storesTotalPages,
     productsTotalPages,
@@ -113,6 +122,7 @@ export default () => {
       search: "",
       storesPage: 1,
       productsPage: 1,
+      pageSize: 100,
       filterByOwner:false
     })
   };
