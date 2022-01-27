@@ -1,0 +1,1 @@
+npm i -g http-server-spa & http-server-spa ./ index.html 4002

@@ -1,0 +1,26 @@
+.hasTooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip {
+    display: none;
+    bottom: 110%;
+    white-space: nowrap;
+}
+
+.hasTooltip:hover .tooltip {
+    display: block;
+}
+
+.hasTooltip .tooltip::after,
+.tooltipArrow {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    margin-left: -4px;
+    border-width: 4px;
+    border-style: solid;
+    border-color: black transparent transparent transparent;
+  }
